@@ -1,0 +1,54 @@
+- name: "OpenJDK Install"
+  yum:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items:
+      - { name: 'java', state: 'latest' }
+      - { name: 'git', state: 'latest' }
+      - { name: 'wget', state: 'latest' }
+
+- name: "Public Key Import"
+  shell: "wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo; rpm --import http://jenkins-ci.org/redhat/jenkins-ci.org.key"
+
+- name: "Jenkins Install"
+  yum:
+    name: jenkins
+    state: latest
+
+- name: "Jenkins Started & Enabled"
+  systemd:
+    name: jenkins
+    state: started
+    enabled: yes
+
+- name: "Install Ruby for ultrahook"
+  yum:
+    name: ruby
+    state: present
+
+- name: "Install Package of Ruby for ultrahook"
+  yum:
+    name: ruby-devel
+    state: present
+
+- name: "Install gcc for ultrahook"
+  yum:
+    name: gcc
+    state: present
+
+- name: "Install ultrahook"
+  shell: |
+    gem install ultrahook
+    echo "api_key: {{ ultrahook_api }}" > /home/{{ ultrahook_user }}/.ultrahook
+
+
+- name: "Debug Payload URL, Login Pass"
+  command: cat /var/lib/jenkins/secrets/initialAdminPassword
+  register: login_pass
+
+- debug:
+    msg: "{{ item }}"
+  with_items:
+    - "{{ login_pass.stdout_lines }}"
+    - "{{ payload_url }}"
+    - "{{ forward_url }}"

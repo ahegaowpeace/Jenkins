@@ -1,0 +1,16 @@
+[jenkins-server]
+localhost
+
+[jenkins-server:vars]
+token_name=github_bk
+token_value=xxxx
+job_name=github_bk
+jenkins_user=admin
+jenkins_serv=
+jenkins_port=8080
+nini=emawisn
+name_space=emawisn
+ultrahook_user=centos
+ultrahook_api=
+payload_url="http://{{ nini }}.{{ name_space }}.ultrahook.com/"
+forward_url="http://{{ jenkins_user }}:{{ token_value }}@{{ jenkins_serv }}:{{ jenkins_port }}/job/{{ job_name }}/buildWithParameters?token={{ token_name }}"

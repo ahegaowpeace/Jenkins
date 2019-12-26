@@ -1,0 +1,4 @@
+- hosts: jenkins-server
+  connection: local
+  roles:
+    - jenkins-server
